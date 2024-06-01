@@ -1,0 +1,103 @@
+---
+- name: Add nginx key
+  shell: |
+    curl -fsSL https://nginx.org/keys/nginx_signing.key | gpg --dearmor -o /usr/share/keyrings/nginx-archive-keyring.gpg
+  args:
+    creates: /usr/share/keyrings/nginx-archive-keyring.gpg
+
+- name: Add nginx repo
+  apt_repository:
+    repo: "{{ item.repo }}"
+    state: present
+    filename: "{{ item.filename }}"
+  loop: "{{ repositories }}"
+
+- name: Configure nginx package
+  copy:
+    content: |
+      Package: *
+      Pin: origin nginx.org
+      Pin: release o=nginx
+      Pin-Priority: 900
+    dest: /etc/apt/preferences.d/99nginx
+    owner: root
+    group: root
+    mode: "0644"
+
+- name:  Update cache
+  apt:
+    update_cache: yes
+
+- name: Install Nginx version 1.26
+  apt:
+    name: "nginx=1.26.*"
+    state: present
+    update_cache: yes
+
+- name: Create SSL
+  script: ssl.sh
+
+- name: Move grafana config file
+  template:
+    src: grafana.j2
+    dest: /etc/nginx/conf.d/grafana.conf
+    owner: root
+    group: root
+
+- name: Move prometheus config file
+  template:
+    src: prometheus.j2
+    dest: /etc/nginx/conf.d/prometheus.conf
+    owner: root
+    group: root
+  notify:
+    - start and enable
+    - Reload nginx
+
+- name: create nginx_exporter user
+  user:
+    name: "{{ nginx_expo_user }}"
+    state: present
+    system: yes
+    shell: /bin/false
+
+- name: create directory for nginx_exporter
+  file:
+    path: "{{ exporter }}"
+    state: directory
+    owner: "{{ nginx_expo_user }}"
+    group: "{{ nginx_expo_user }}"
+    mode: "0755"
+
+- name: install node_exporter
+  unarchive:
+    src: "{{ nginx_exporter }}"
+    dest: /tmp/
+    remote_src: yes
+    validate_certs: no
+
+- name: Move nginx_exporter config file
+  copy:
+    src: "/tmp/nginx-prometheus-exporter"
+    dest: "{{ exporter }}"
+    owner: "{{ nginx_expo_user }}"
+    group: "{{ nginx_expo_user }}"
+    mode: "0755"
+    remote_src: yes
+    
+- name: Move nginx_exporter.conf file
+  copy:
+    src: nginx_exporter.conf
+    dest: /etc/nginx/conf.d/
+    owner: root
+    group: root
+
+- name: Install nginx_exporter service
+  template:
+    src: nginx_exporter.service.j2
+    dest: /etc/systemd/system/nginx_exporter.service
+    owner: root
+    group: root
+  notify:
+    - Reload systemd daemon
+    - start and enable nginx_exporter
