@@ -1,0 +1,8 @@
+---
+
+galaxy_info:
+  author: Misho Shermadini
+  description: ansible+monitoring.
+  min_ansible_version: 2.4
+
+dependencies: []
