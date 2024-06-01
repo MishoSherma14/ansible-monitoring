@@ -1,0 +1,9 @@
+prometheus: https://github.com/prometheus/prometheus/releases/download/v2.52.0/prometheus-2.52.0.linux-amd64.tar.gz
+version: prometheus-2.52.0
+prometheus_data: /var/lib/prometheus/data
+prometheus_dir: /etc/prometheus
+prometheus_bin: /usr/local/bin/
+prometheus_user: prometheus
+prometheus_group: prometheus
+prom: prometheus.devops.tbc
+graf: grafana.devops.tbc
