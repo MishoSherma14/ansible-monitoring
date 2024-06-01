@@ -1,0 +1,15 @@
+[prometheus]
+lb01.devops.tbc
+
+[grafana]
+lb02.devops.tbc
+
+[node_exporter]
+lb01.devops.tbc
+lb02.devops.tbc
+
+[alertmanager]
+lb01.devops.tbc
+
+[nginx]
+lb03.devops.tbc

@@ -1,0 +1,29 @@
+---
+- hosts: lb03.devops.tbc
+  become: true
+  vars_files:
+    - roles/nginx/vars/main.yaml
+    - roles/node_exporter/vars/main.yaml
+  roles:
+    - nginx
+    - node_exporter
+
+- hosts: lb01.devops.tbc
+  become: true
+  vars_files:
+    - roles/prometheus/vars/main.yaml
+    - roles/alertmanager/vars/main.yaml
+    - roles/node_exporter/vars/main.yaml
+  roles:
+    - prometheus
+    - alertmanager
+    - node_exporter
+    
+- hosts: lb02.devops.tbc
+  become: true
+  vars_files:
+    - roles/grafana/vars/main.yaml
+    - roles/node_exporter/vars/main.yaml
+  roles:
+    - node_exporter
+    - grafana

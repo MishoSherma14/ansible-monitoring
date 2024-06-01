@@ -1,0 +1,19 @@
+- src: https://github.com/MishoSherma14/ansible-monitoring/tree/master/roles/nginx/
+  version: master
+  name: nginx
+
+- src: https://github.com/MishoSherma14/ansible-monitoring/tree/master/roles
+  version: master
+  name: node_exporter
+
+- src: https://github.com/MishoSherma14/ansible-monitoring/tree/master/roles
+  version: master
+  name: prometheus
+
+- src: https://github.com/MishoSherma14/ansible-monitoring/tree/master/roles
+  version: master
+  name: alertmanager
+
+- src: https://github.com/MishoSherma14/ansible-monitoring/tree/master/roles
+  version: master
+  name: grafana

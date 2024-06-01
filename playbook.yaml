@@ -1,0 +1,8 @@
+---
+
+- hosts: grafana
+  become: true
+  vars_files:
+      - roles/grafana/vars/main.yaml
+  roles:
+      - grafana
