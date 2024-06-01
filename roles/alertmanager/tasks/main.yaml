@@ -1,0 +1,60 @@
+---
+
+- name: Create system user for alertmanager
+  user:
+    name: "{{ alertmanager_user }}"
+    shell: /bin/false
+    create_home: no
+    state: present
+
+- name: Install alertmanager
+  unarchive:
+    src: "{{ alertmanager }}"
+    dest: /tmp/
+    remote_src: yes
+    validate_certs: no
+
+- name: Create directories for alertmanager
+  file:
+    path: "{{ item.path }}"
+    state: directory
+    owner: "{{ alertmanager_user }}"
+    group: "{{ alertmanager_group }}"
+    mode: 0755
+  loop:
+    - { path: "{{ alertmanager_dir }}" }
+    - { path: "{{ alertmanager_data }}" }
+      
+- name: Move alertmanager binaries to the final destination
+  copy:
+    src: "/tmp/{{ version }}.linux-amd64/{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ item.owner }}"
+    group: "{{ item.group }}"
+    mode: "{{ item.mode | default(omit) }}"
+    remote_src: yes
+  with_items:
+    - { src: 'alertmanager', dest: "{{ alertmanager_bin }}", owner: root, group: root, mode: '0755' }
+    - { src: 'alertmanager.yml', dest: "{{ alertmanager_dir }}", owner: "{{ alertmanager_user }}", group: "{{ alertmanager_group }}" }
+
+- name: Install alertmanager service
+  template:
+    src: alertmanager.service.j2
+    dest: /etc/systemd/system/alertmanager.service
+    owner: "{{ alertmanager_user }}"
+    group: "{{ alertmanager_group }}"
+  notify:
+    - Reload systemd daemon
+    - start and enable
+
+- name: Add alermanager config file
+  template:
+    src: alertmanager.j2
+    dest: /etc/alertmanager/alertmanager.yml
+    owner: "{{ alertmanager_user }}"
+    group: "{{ alertmanager_group }}"
+
+- name: Remove alertmanager directory
+  file:
+    path: "/tmp/{{ version }}.linux-amd64"
+    state: absent
