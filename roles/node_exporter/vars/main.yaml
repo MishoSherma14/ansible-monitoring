@@ -1,0 +1,5 @@
+node_exporter: https://github.com/prometheus/node_exporter/releases/download/v1.8.0/node_exporter-1.8.0.linux-amd64.tar.gz
+node_user: node_exporter
+node_group: node_exporter
+node_version: node_exporter-1.8.0
+node_bin: /usr/local/bin/
