@@ -1,0 +1,13 @@
+prom: prometheus.devops.tbc
+graf: grafana.devops.tbc
+repositories:
+  - repo: "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] http://nginx.org/packages/ubuntu/ {{ distribution_codename }} nginx"
+    filename: nginx
+  - repo: "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] http://nginx.org/packages/mainline/ubuntu/ {{ distribution_codename }} nginx"
+    filename: nginx-mainline
+distribution_codename: "{{ ansible_distribution_release }}"
+key_path: /etc/ssl/private/DevopsAcademy.key
+crt_path: /etc/ssl/certs/DevopsAcademy.crt
+nginx_exporter: https://github.com/nginxinc/nginx-prometheus-exporter/releases/download/v1.1.0/nginx-prometheus-exporter_1.1.0_linux_amd64.tar.gz
+nginx_expo_user: nginx_exporter
+exporter: /etc/nginx_exporter
