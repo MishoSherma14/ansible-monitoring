@@ -1,0 +1,10 @@
+---
+- name: Reload systemd daemon
+  systemd_service:
+    daemon_reload: true
+
+- name: start and enable
+  systemd:
+    name: node_exporter
+    state: started
+    enabled: yes
