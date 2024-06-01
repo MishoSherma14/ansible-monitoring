@@ -1,0 +1,25 @@
+
+---
+
+- name: start and enable
+  systemd:
+    name: nginx
+    state: started
+    enabled: yes
+
+- name: Reload nginx
+  service:
+    name: nginx
+    state: restarted
+
+- name: Reload systemd daemon
+  systemd_service:
+    daemon_reload: true
+
+- name: start and enable nginx_exporter
+  systemd:
+    name: nginx_exporter
+    state: started
+    enabled: yes
+     
+
