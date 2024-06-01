@@ -1,0 +1,21 @@
+Description=Prometheus
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User={{ prometheus_user }}
+Group={{ prometheus_group }}
+Type=simple
+Restart=on-failure
+RestartSec=5s
+ExecStart={{ prometheus_bin }}prometheus \
+    --config.file={{ prometheus_dir }}/prometheus.yml \
+    --storage.tsdb.path={{ prometheus_data }} \
+    --web.console.templates={{ prometheus_dir }}/consoles \
+    --web.console.libraries={{ prometheus_dir }}/console_libraries \
+    --web.listen-address=0.0.0.0:9090 \
+    --web.enable-lifecycle
+#    --web.config.file=/etc/prometheus/sec.yaml
+
+[Install]
+WantedBy=multi-user.target
