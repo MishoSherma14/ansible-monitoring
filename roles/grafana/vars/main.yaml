@@ -1,0 +1,12 @@
+grafana_repo: https://dl.grafana.com/enterprise/release/grafana-enterprise_11.0.0_amd64.deb
+version: grafana_enterprise_11.0.0
+grafana_user: grafana
+graf_url: https://grafana.devops.tbc
+prom_url: https://prometheus.devops.tbc
+tools:
+  - adduser
+  - libfontconfig1
+  - musl
+  - apt-transport-https
+  - software-properties-common
+graf_password: admin 
