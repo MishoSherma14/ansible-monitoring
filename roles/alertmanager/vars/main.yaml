@@ -1,0 +1,8 @@
+alertmanager: https://github.com/prometheus/alertmanager/releases/download/v0.27.0/alertmanager-0.27.0.linux-amd64.tar.gz
+alertmanager_user: alertmanager
+alertmanager_group: alertmanager
+alertmanager_dir: /etc/alertmanager
+alertmanager_data: /var/lib/alertmanager
+alertmanager_bin: /usr/local/bin
+version: alertmanager-0.27.0
+discord: https://discord.com/api/webhooks/1243674850476687480/G5a3FDIFseKlr0w4r31gUsmgjA5gSCjkYmjfCTGDwAMFIHx3j6WvXZ-EWrg8D_l6BBWj 
