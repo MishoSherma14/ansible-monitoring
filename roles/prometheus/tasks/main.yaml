@@ -1,0 +1,70 @@
+---
+
+- name: Create system user for prometheus service
+  user:
+    name: "{{ prometheus_user }}"
+    state: present
+    system: yes
+    shell: /bin/false
+
+- name: Install prometheus
+  unarchive:
+    src: "{{ prometheus }}"
+    dest: /tmp/
+    remote_src: yes
+    validate_certs: no
+
+- name: Create directory for prometheus
+  file:
+    path: "{{ item.path }}"
+    state: directory
+    owner: "{{ prometheus_user }}"
+    group: "{{ prometheus_group }}"
+    mode: 0755
+  loop:
+    - { path: "{{ prometheus_dir }}" }
+    - { path: "{{ prometheus_data }}" }
+
+- name: Move the binaries to the final destination
+  copy:
+    src: "/tmp/{{ version }}.linux-amd64/{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ item.owner }}"
+    group: "{{ item.group }}"
+    mode: "{{ item.mode | default(omit) }}"
+    remote_src: yes
+  with_items:
+    - { src: 'prometheus', dest: "{{ prometheus_bin }}", owner: root, group: root, mode: '0755' }
+    - { src: 'promtool', dest: "{{ prometheus_bin }}", owner: root, group: root, mode: '0755' }
+    - { src: 'console_libraries', dest: "{{ prometheus_dir }}", owner: "{{ prometheus_user }}", group: "{{ prometheus_group }}" }
+    - { src: 'consoles', dest: "{{ prometheus_dir }}", owner: "{{ prometheus_user }}", group: "{{ prometheus_group }}" }
+
+- name: Move prometheus.yml
+  template:
+    src: prometheus.j2
+    dest: /etc/prometheus/prometheus.yml
+    owner: "{{ prometheus_user }}"
+    group: "{{ prometheus_group }}"
+
+- name: Remove prometheus directory
+  file:
+    path: "/tmp/{{ version }}.linux-amd64"
+    state: absent
+
+- name: Install service
+  template:
+    src: prometheus.service.j2
+    dest: /etc/systemd/system/prometheus.service
+    owner: "{{ prometheus_user }}"
+    group: "{{ prometheus_group }}"
+  notify:
+    - Reload systemd daemon
+    - start and enable
+    - restart
+
+- name: Add alert config file
+  template:
+    src: alert.j2
+    dest: /etc/prometheus/alert.yml
+    owner: "{{ prometheus_user }}"
+    group: "{{ prometheus_group }}"
