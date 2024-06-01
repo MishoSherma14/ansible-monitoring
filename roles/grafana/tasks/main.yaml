@@ -1,0 +1,65 @@
+---
+- name: create system user for grafana
+  user:
+    name: "{{ grafana_user }}"
+    shell: /bin/false
+    create_home: no
+    state: present
+
+- name: Install tools
+  apt:
+    name: "{{ tools }}"
+    state: present
+    update_cache: yes
+
+- name: Download grafana package
+  get_url:
+    url: "{{ grafana_repo }}"
+    dest: "/tmp/{{ version }}_amd64.deb"
+
+- name: Install Grafana
+  apt:
+    deb: "/tmp/{{ version }}_amd64.deb"
+
+- name: start and enable
+  systemd:
+    name: grafana-server
+    state: started
+    enabled: yes
+
+- name: create prometheus datasource
+  grafana_datasource:
+    name: "Prometheus"
+    grafana_url: "{{ graf_url }}"
+    grafana_user: admin
+    grafana_password: "{{ prom_url }}"
+    org_id: "1"
+    ds_type: "prometheus"
+    ds_url: "{{ prom_url }}"
+    validate_certs: no
+
+- name: Grafana dashboard
+  copy:
+    src: DevopsAcademy.json
+    dest: /var/lib/grafana/Devops.json
+    owner: grafana
+    group: grafana
+    mode: "640"
+
+- name: start dashboard
+  template:
+    src: Devops.j2
+    dest: /etc/grafana/provisioning/dashboards/Devops.yaml
+    owner: root
+    group: grafana
+    mode: "640"
+  notify:
+    - restart
+
+- name: Create a Grafana organization
+  community.grafana.grafana_organization:
+    url: "{{ graf_url }}"
+    url_username: admin
+    url_password: "{{ graf_password }}"
+    name: DevopsAcademy
+    state: present
