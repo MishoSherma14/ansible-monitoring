@@ -1,0 +1,23 @@
+---
+groups:
+- name: DevopsAcademy
+  rules:
+  - alert: ServerRestart
+    expr: |
+      changes(node_boot_time_seconds[5m]) > 0
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      title: 'Server Restart Detected for {{ "{{" }} $labels.instance {{ "}}" }}'
+      description: 'The server at {{ "{{" }} $labels.instance {{ "}}" }} has restarted.'
+
+  - alert: ServerPowerOff
+    expr: |
+      up == 0
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      title: 'Server Power Off Detected for {{ "{{" }} $labels.instance {{ "}}" }}'
+      description: 'The server at {{ "{{" }} $labels.instance {{ "}}" }} appears to be powered off or is not reachable.'
