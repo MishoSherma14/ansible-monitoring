@@ -1,0 +1,14 @@
+[Unit]
+Description=Nginx Exorter
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User={{ nginx_expo_user }}
+Group={{ nginx_expo_user }}
+Type=simple
+ExecStart={{ exporter }}/nginx-prometheus-exporter \
+    -nginx.scrape-uri=http://{{ prom }}:8080/status
+
+[Install]
+WantedBy=multi-user.target
